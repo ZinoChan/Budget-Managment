@@ -9,8 +9,13 @@ class App {
     this.app = express();
     this.port = process.env.PORT || 4001;
     this.env = "development";
+
+    this.initializeMiddlewares();
   }
 
+  private initializeMiddlewares() {
+    this.app.use(express.json());
+  }
   public listen() {
     this.app.listen(this.port, () => {
       console.log(`listening on port ${this.port}`);
