@@ -1,4 +1,5 @@
 import express from "express";
+import { NODE_ENV, PORT } from "./config";
 
 class App {
   public app: express.Application;
@@ -7,8 +8,8 @@ class App {
 
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || 4001;
-    this.env = "development";
+    this.port = PORT || 4001;
+    this.env = NODE_ENV || "development";
 
     this.initializeMiddlewares();
   }
