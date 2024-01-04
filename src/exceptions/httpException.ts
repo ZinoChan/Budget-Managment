@@ -1,10 +1,8 @@
-import { HttpStatusCode } from "@/types/httpStatusCodes";
-
 export class HttpException extends Error {
-  public status: HttpStatusCode;
+  public status: number;
   public message: string;
 
-  constructor(status: HttpStatusCode, message: string) {
+  constructor(status: number, message: string) {
     super(`${message}`);
     this.status = status;
     this.message = message;
