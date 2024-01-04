@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "strict": true,
     "lib": ["esnext"],
     "esModuleInterop": true,
     "module": "commonjs",                                /* Specify what module code is generated. */
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["*"]
     },
     "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  }
+  },
+
 }

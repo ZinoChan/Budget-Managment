@@ -1,3 +1,4 @@
+import "module-alias/register";
 import express from "express";
 import { NODE_ENV, PORT } from "./appConfig";
 import errorMiddleware from "./middlewares/error.midleware";
