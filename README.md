@@ -1,4 +1,4 @@
-# # Kakeibo API 💰
+# Kakeibo API 💰
 
 ## Overview
 
