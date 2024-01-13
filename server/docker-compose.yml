@@ -6,9 +6,10 @@ services:
     environment:
       - POSTGRES_USER=zino
       - POSTGRES_PASSWORD=sakata_gintoki
+      - POSTGRES_DB=kakeibo
     volumes:
       - postgres:/var/lib/postgresql/kakeibo
     ports:
-      - "5439:5432"
+      - "5434:5432"
 volumes:
   postgres:
