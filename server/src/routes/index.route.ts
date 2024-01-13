@@ -3,7 +3,7 @@ import { Route } from "@/types/routes.interface";
 import { Router } from "express";
 
 class IndexRoute implements Route {
-  public path = "/auth/hello";
+  public path = "/";
   public router = Router();
 
   constructor() {
