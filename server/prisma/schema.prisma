@@ -8,17 +8,23 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(uuid())
-  email           String           @unique
-  username        String
-  password        String?
-  googleId        String?          @unique
-  githubId        String?          @unique
-  accessToken     String?
-  refreshToken    String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  budgetEnvelopes BudgetEnvelope[]
+  id               String           @id @default(uuid())
+  email            String           @unique
+  username         String
+  password         String?
+  googleId         String?          @unique
+  githubId         String?          @unique
+  accessToken      String?
+  refreshToken     String?
+  verified         Boolean?         @default(false)
+  verificationCode String?          @unique @db.Text
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  budgetEnvelopes  BudgetEnvelope[]
+  role             RoleEnumType?    @default(USER)
+
+  @@unique([email, verificationCode])
+  @@index([email, verificationCode])
 }
 
 model BudgetEnvelope {
@@ -58,4 +64,9 @@ enum TransactionType {
   WITHDRAW
   DEPOSIT
   PURCHASE
+}
+
+enum RoleEnumType {
+  USER
+  ADMIN
 }
