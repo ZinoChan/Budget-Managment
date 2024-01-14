@@ -11,4 +11,5 @@ export const {
   NODE_MAILER_HOST,
   NODE_MAILER_PORT,
   NODE_MAILER_SECURE,
+  ORIGIN,
 } = process.env;

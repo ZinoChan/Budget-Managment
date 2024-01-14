@@ -17,7 +17,7 @@ class AuthController {
     const body = req.body;
 
     try {
-      await this.authService.createUser(body);
+      const user = await this.authService.createUser(body);
       return res
         .status(HttpStatusCodes.CREATED)
         .send({ message: "user created successfully" });
