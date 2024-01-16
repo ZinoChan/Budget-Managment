@@ -22,7 +22,6 @@ export const createUserSchema = object({
 
 export const verifyUserSchema = object({
   params: object({
-    id: string(),
     verificationCode: string(),
   }),
 });

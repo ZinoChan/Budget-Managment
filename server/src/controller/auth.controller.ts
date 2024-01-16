@@ -1,5 +1,5 @@
 import { HttpStatusCodes } from "@/constants";
-import { CreateUserInput } from "@/schemas/user.schema";
+import { CreateUserInput, VerifyUserInput } from "@/schemas/user.schema";
 import AuthService from "@/services/auth.service";
 import { Request, Response, NextFunction } from "express";
 
@@ -17,11 +17,31 @@ class AuthController {
     const body = req.body;
 
     try {
-      const user = await this.authService.createUser(body);
-      return res
-        .status(HttpStatusCodes.CREATED)
-        .send({ message: "user created successfully" });
+      const userEmail = await this.authService.createUser(body);
+      return res.status(HttpStatusCodes.CREATED).send({
+        message: `An email verification has been sent to ${userEmail}`,
+      });
     } catch (error: any) {
+      console.log(`Error SignUp: ${error}`);
+      next(error);
+    }
+  };
+
+  public verifyEmail = async (
+    req: Request<VerifyUserInput>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const verifiedUser = await this.authService.verifyUserEmail(
+        req.params.verificationCode
+      );
+      if (verifiedUser)
+        return res
+          .status(HttpStatusCodes.OK)
+          .send({ message: "User email successfully verified" });
+    } catch (error) {
+      console.log("Email Verification Error", error);
       next(error);
     }
   };

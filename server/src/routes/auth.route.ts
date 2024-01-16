@@ -1,7 +1,7 @@
 import { API_ROUTES } from "@/constants";
 import AuthController from "@/controller/auth.controller";
 import validateResource from "@/middlewares/validateResources.midleware";
-import { createUserSchema } from "@/schemas/user.schema";
+import { createUserSchema, verifyUserSchema } from "@/schemas/user.schema";
 import { Route } from "@/types/routes.interface";
 import { Router } from "express";
 class AuthRoute implements Route {
@@ -19,6 +19,11 @@ class AuthRoute implements Route {
       `/${this.path}/${API_ROUTES.SIGN_UP}`,
       validateResource(createUserSchema),
       this.authController.signUp
+    );
+    this.router.post(
+      `/${this.path}/${API_ROUTES.VERIFY_EMAIL}/:verificationCode`,
+      validateResource(verifyUserSchema),
+      this.authController.verifyEmail
     );
   }
 }
