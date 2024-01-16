@@ -25,16 +25,10 @@ const smtpConfig = {
   pass: NODE_MAILER_PASS!,
 };
 
-// const transporter = nodemailer.createTransport({ ...smtpConfig });
-
 class Mailer {
-  private _firstName: string;
-  private _to: string;
   private _from: string;
 
-  constructor(private user: Prisma.UserCreateInput, private url: string) {
-    this._firstName = user.username;
-    this._to = user.email;
+  constructor() {
     this._from = `Kakeibo <webdevzino@gmail.com>`;
   }
   private newTransoporter() {
@@ -43,20 +37,26 @@ class Mailer {
     });
   }
 
-  private async sendEmail(template: string, subject: string) {
+  private async sendEmail(
+    template: string,
+    subject: string,
+    url: string,
+    firstName: string,
+    to: string
+  ) {
     const srcFolderPath = path.join(__dirname, "..");
     const html = pug.renderFile(
       path.join(srcFolderPath, "templates", `${template}.pug`),
       {
-        firstName: this._firstName,
+        firstName,
         subject,
-        url: this.url,
+        url,
       }
     );
 
     const mailOptions = {
       from: this._from,
-      to: this._to,
+      to,
       subject,
       text: convert(html),
       html,
@@ -66,24 +66,15 @@ class Mailer {
     console.log(nodemailer.getTestMessageUrl(info));
   }
 
-  async sendVerificationCode() {
-    await this.sendEmail("verificationCode", "Your account verification code");
+  async sendVerificationCode(url: string, firstName: string, to: string) {
+    await this.sendEmail(
+      "verificationCode",
+      "Your account verification code",
+      url,
+      firstName,
+      to
+    );
   }
 }
-
-// async function sendEmail(payload: SendMailOptions) {
-//   transporter.sendMail(payload, (err, info) => {
-//     if (err) {
-//       console.log(err);
-//       throw new HttpException(
-//         HttpStatusCodes.INTERNAL_SERVER_ERROR,
-//         "Error sending email"
-//       );
-//     }
-//     console.info(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
-//   });
-// }
-
-// export default sendEmail;
 
 export default Mailer;
