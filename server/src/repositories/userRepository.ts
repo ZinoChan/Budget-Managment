@@ -1,5 +1,5 @@
 import { CreateUserInterface } from "@/types/auth.interface";
-import { PrismaClient, User } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 
 class UserRepository {
   private prisma: PrismaClient;
@@ -15,24 +15,15 @@ class UserRepository {
     return user;
   }
 
-  async findUserById(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-    });
-    return user;
+  async findUniqueUser(where: Prisma.UserWhereUniqueInput) {
+    return (await this.prisma.user.findUnique({ where })) as User;
   }
-
   async updateUser(
-    id: string,
-    updateData: Partial<User>
-  ): Promise<User | null> {
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: {
-        ...updateData,
-      },
-    });
-    return user;
+    where: Prisma.UserWhereUniqueInput,
+    data: Prisma.UserUpdateInput,
+    select?: Prisma.UserSelect
+  ) {
+    return (await this.prisma.user.update({ where, data, select })) as User;
   }
 }
 
