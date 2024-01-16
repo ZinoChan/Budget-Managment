@@ -1,19 +1,39 @@
 import { ORIGIN } from "@/config";
-import { HttpStatusCodes } from "@/constants";
+import { API_ROUTES, HttpStatusCodes } from "@/constants";
 import { HttpException } from "@/exceptions/httpException";
 import UserRepository from "@/repositories/userRepository";
-import { CreateUserInput, VerifyUserInput } from "@/schemas/user.schema";
+import { CreateUserInput } from "@/schemas/user.schema";
 import Mailer from "@/utils/mailer";
-import generateSecureCode from "@/utils/verificationCode";
-import { User } from "@prisma/client";
+import {
+  generateSecureCode,
+  hashVerificationCode,
+} from "@/utils/verificationCode";
 import argon2 from "argon2";
+
 class AuthService {
   private userRepository: UserRepository;
-  constructor(userRepository: UserRepository) {
+  private mailer: Mailer;
+
+  constructor(userRepository: UserRepository, mailer: Mailer) {
     this.userRepository = userRepository;
+    this.mailer = mailer;
   }
-  public async createUser(userData: CreateUserInput): Promise<User> {
+  public async createUser(userData: CreateUserInput): Promise<string> {
     const { username, email, password, passwordConfirmation } = userData;
+
+    const existingUserByEmail = await this.userRepository.findUniqueUser({
+      email,
+    });
+    if (existingUserByEmail) {
+      throw new HttpException(HttpStatusCodes.CONFLICT, "Email already exists");
+    }
+
+    if (password !== passwordConfirmation) {
+      throw new HttpException(
+        HttpStatusCodes.UNPROCESSABLE_ENTITY,
+        "Password and password confirmation do not match"
+      );
+    }
 
     const hashPassword = await argon2.hash(password);
 
@@ -24,27 +44,42 @@ class AuthService {
       password: hashPassword,
       verificationCode,
     });
-    const redirectUrl = `${ORIGIN}/verifyemail/${verifyCode}`;
-    await new Mailer(user, redirectUrl).sendVerificationCode();
-    console.log(user);
-    return user;
+
+    const redirectUrl = `${ORIGIN}/${API_ROUTES.AUTH}/${API_ROUTES.VERIFY_EMAIL}/${verifyCode}`;
+    await this.mailer.sendVerificationCode(
+      redirectUrl,
+      user.username,
+      user.email
+    );
+
+    return user.email;
   }
 
-  public async verifyUserHandler(id: string, verificationCode: string) {
-    const user = await this.userRepository.findUserById(id);
-    if (!user)
-      throw new HttpException(HttpStatusCodes.NOT_FOUND, "user not found");
+  public async verifyUserEmail(verificationCode: string) {
+    const hashedVerificationCode = hashVerificationCode(verificationCode);
 
-    if (user.verified) return true;
+    const existingUser = await this.userRepository.findUniqueUser({
+      verificationCode: hashedVerificationCode,
+    });
 
-    if (user.verificationCode === verificationCode) {
-      await this.userRepository.updateUser(id, {
-        verificationCode,
-      });
-      return true;
-    }
+    if (!existingUser)
+      throw new HttpException(HttpStatusCodes.NOT_FOUND, "User not found");
 
-    return false;
+    if (existingUser.verified)
+      throw new HttpException(
+        HttpStatusCodes.BAD_REQUEST,
+        "User is already verified"
+      );
+
+    const verifiedUser = await this.userRepository.updateUser(
+      { verificationCode: hashedVerificationCode },
+      {
+        verificationCode: null,
+        verified: true,
+      }
+    );
+
+    return verifiedUser.verified;
   }
 }
 

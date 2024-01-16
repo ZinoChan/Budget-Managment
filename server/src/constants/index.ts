@@ -5,6 +5,8 @@ export const HttpStatusCodes = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  CONFLICT: 409,
+  UNPROCESSABLE_ENTITY: 422,
   INTERNAL_SERVER_ERROR: 500,
 };
 
@@ -14,4 +16,5 @@ export const API_ROUTES = {
   AUTH: "auth",
   LOGIN: "login",
   SIGN_UP: "signup",
+  VERIFY_EMAIL: "verifyemail",
 };
