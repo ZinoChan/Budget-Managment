@@ -6,6 +6,7 @@ export default {
   jwtAccessTokenPublicKey: "JWT_ACCESS_TOKEN_PUBLIC_KEY",
   jwtRefreshTokenPrivateKey: "JWT_REFRESH_TOKEN_PRIVATE_KEY",
   jwtRefreshTokenPublicKey: "JWT_REFRESH_TOKEN_PUBLIC_KEY",
+  redisUrl: "REDIS_URL",
   smtp: {
     host: "NODE_MAILER_HOST",
     pass: "NODE_MAILER_PASS",
