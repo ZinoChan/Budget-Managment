@@ -1,6 +1,6 @@
 import { HttpStatusCodes } from "@/constants";
 import { Request, Response, NextFunction } from "express";
-import { AnyZodObject } from "zod";
+import { AnyZodObject, ZodError } from "zod";
 
 const validateResource =
   (schema: AnyZodObject) =>
@@ -12,8 +12,13 @@ const validateResource =
         params: req.params,
       });
       next();
-    } catch (e: any) {
-      return res.status(HttpStatusCodes.BAD_REQUEST).send(e.errors);
+    } catch (err: any) {
+      if (err instanceof ZodError)
+        return res.status(HttpStatusCodes.BAD_REQUEST).json({
+          status: "fail",
+          errors: err.errors,
+        });
+      next(err);
     }
   };
 
