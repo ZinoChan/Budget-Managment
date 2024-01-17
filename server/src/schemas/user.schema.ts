@@ -19,6 +19,16 @@ export const createUserSchema = object({
     path: ["passwordConfirmation"],
   }),
 });
+export const loginUserSchema = object({
+  body: object({
+    email: string({
+      required_error: "Email is required",
+    }).email("Invalid email address"),
+    password: string({
+      required_error: "Password is required",
+    }).min(8, "Invalid passwrod length"),
+  }),
+});
 
 export const verifyUserSchema = object({
   params: object({

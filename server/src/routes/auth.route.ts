@@ -25,6 +25,11 @@ class AuthRoute implements Route {
       validateResource(verifyUserSchema),
       this.authController.verifyEmail
     );
+    this.router.post(
+      `/${this.path}/${API_ROUTES.LOGIN}`,
+      validateResource(loginUserSchema),
+      this.authController.login
+    );
   }
 }
 

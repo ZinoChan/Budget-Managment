@@ -83,6 +83,28 @@ class AuthService {
 
     return verifiedUser.verified;
   }
+  public async loginUser(email: string, password: string) {
+    const user = await this.userRepository.findUniqueUser(
+      { email },
+      {
+        id: true,
+        email: true,
+        verified: true,
+        password: true,
+      }
+    );
+
+    if (!user || !(await argon2.verify(user.password!, password)))
+      throw new HttpException(
+        HttpStatusCodes.FORBIDDEN,
+        "Invalid email or password"
+      );
+
+    const { access_token, refresh_token } =
+      await this.userRepository.signTokens(user);
+
+    return { access_token, refresh_token };
+  }
 }
 
 export default AuthService;
