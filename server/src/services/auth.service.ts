@@ -1,4 +1,3 @@
-import { ORIGIN } from "@/config";
 import { API_ROUTES, HttpStatusCodes } from "@/constants";
 import { HttpException } from "@/exceptions/httpException";
 import UserRepository from "@/repositories/userRepository";
@@ -9,6 +8,7 @@ import {
   hashVerificationCode,
 } from "@/utils/verificationCode";
 import argon2 from "argon2";
+import config from "config";
 
 class AuthService {
   private userRepository: UserRepository;
@@ -45,7 +45,9 @@ class AuthService {
       verificationCode,
     });
 
-    const redirectUrl = `${ORIGIN}/${API_ROUTES.AUTH}/${API_ROUTES.VERIFY_EMAIL}/${verifyCode}`;
+    const redirectUrl = `${config.get<string>("origin")}/${API_ROUTES.AUTH}/${
+      API_ROUTES.VERIFY_EMAIL
+    }/${verifyCode}`;
     await this.mailer.sendVerificationCode(
       redirectUrl,
       user.username,

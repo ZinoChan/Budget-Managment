@@ -1,24 +1,31 @@
 // import "module-alias/register";
+require("dotenv").config();
 import express from "express";
-import { NODE_ENV, PORT } from "./config";
+import config from "config";
 import errorMiddleware from "./middlewares/error.midleware";
 import { Route } from "./types/routes.interface";
 import { API_ROUTES } from "./constants";
 import morgan from "morgan";
-
+import validateEnv from "./utils/validateEnv";
 class App {
   public app: express.Application;
   public port: string | number;
   public env: string;
 
   constructor(routes: Route[]) {
+    this.initializeEnv();
+
     this.app = express();
-    this.port = PORT || 4001;
-    this.env = NODE_ENV || "development";
+    this.port = config.get<number>("port") || 4001;
+    this.env = config.get<string>("nodeEnv") || "development";
 
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeErrorHandling();
+  }
+
+  private initializeEnv() {
+    validateEnv();
   }
 
   private initializeMiddlewares() {

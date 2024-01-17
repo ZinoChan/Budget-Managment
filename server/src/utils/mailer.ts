@@ -1,29 +1,15 @@
-import nodemailer, { SendMailOptions } from "nodemailer";
-import { HttpException } from "@/exceptions/httpException";
-import { HttpStatusCodes } from "@/constants";
-import {
-  NODE_MAILER_HOST,
-  NODE_MAILER_PASS,
-  NODE_MAILER_PORT,
-  NODE_MAILER_SECURE,
-  NODE_MAILER_USER,
-} from "@/config";
-import { Prisma } from "@prisma/client";
+import nodemailer from "nodemailer";
 import { convert } from "html-to-text";
 import pug from "pug";
 import * as path from "path";
+import config from "config";
 
-const smtpConfig = {
-  auth: {
-    user: NODE_MAILER_USER!,
-    pass: NODE_MAILER_PASS!,
-  },
-  host: NODE_MAILER_HOST!,
-  port: Number(NODE_MAILER_PORT)!,
-  user: NODE_MAILER_USER!,
-  secure: NODE_MAILER_SECURE === "true",
-  pass: NODE_MAILER_PASS!,
-};
+const smtpConfig = config.get<{
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
+}>("smtp");
 
 class Mailer {
   private _from: string;
@@ -34,6 +20,10 @@ class Mailer {
   private newTransoporter() {
     return nodemailer.createTransport({
       ...smtpConfig,
+      auth: {
+        user: smtpConfig.user,
+        pass: smtpConfig.pass,
+      },
     });
   }
 
