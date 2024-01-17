@@ -11,5 +11,13 @@ services:
       - postgres:/var/lib/postgresql/kakeibo
     ports:
       - "5434:5432"
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisDB:/data
 volumes:
   postgres:
+  redisDB:
