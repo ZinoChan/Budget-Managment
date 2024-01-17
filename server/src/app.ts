@@ -7,6 +7,8 @@ import { Route } from "./types/routes.interface";
 import { API_ROUTES } from "./constants";
 import morgan from "morgan";
 import validateEnv from "./utils/validateEnv";
+import cookieParser from "cookie-parser";
+
 class App {
   public app: express.Application;
   public port: string | number;
@@ -31,6 +33,7 @@ class App {
   private initializeMiddlewares() {
     this.app.use(express.json());
     this.app.use(morgan("dev"));
+    this.app.use(cookieParser());
   }
 
   private initializeRoutes(routes: Route[]) {

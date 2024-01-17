@@ -1,7 +1,9 @@
 import { API_ROUTES, HttpStatusCodes } from "@/constants";
 import { HttpException } from "@/exceptions/httpException";
+import redisClient from "@/lib/RedisClient";
 import UserRepository from "@/repositories/userRepository";
 import { CreateUserInput } from "@/schemas/user.schema";
+import { signJwt, verifyJwt } from "@/utils/jwt";
 import Mailer from "@/utils/mailer";
 import {
   generateSecureCode,
@@ -83,6 +85,7 @@ class AuthService {
 
     return verifiedUser.verified;
   }
+
   public async loginUser(email: string, password: string) {
     const user = await this.userRepository.findUniqueUser(
       { email },
@@ -104,6 +107,39 @@ class AuthService {
       await this.userRepository.signTokens(user);
 
     return { access_token, refresh_token };
+  }
+
+  public async refreshAccessToken(refresh_token: string) {
+    const errMsg = "could not refresh access token";
+    if (!refresh_token)
+      throw new HttpException(HttpStatusCodes.FORBIDDEN, "no refresh" + errMsg);
+
+    const decoded = verifyJwt<{ sub: string }>(
+      refresh_token,
+      "jwtRefreshTokenPrivateKey"
+    );
+    if (!decoded)
+      throw new HttpException(
+        HttpStatusCodes.FORBIDDEN,
+        "not decoded" + errMsg
+      );
+
+    const session = await redisClient.get(decoded.sub);
+    if (!session)
+      throw new HttpException(HttpStatusCodes.FORBIDDEN, "no session" + errMsg);
+
+    const user = await this.userRepository.findUniqueUser({
+      id: JSON.parse(session).id,
+    });
+
+    if (!user)
+      throw new HttpException(HttpStatusCodes.FORBIDDEN, "no user" + errMsg);
+
+    const access_token = signJwt({ sub: user.id }, "jwtAccessTokenPrivateKey", {
+      expiresIn: `${config.get<number>("accessTokenExpiresIn")}m`,
+    });
+
+    return { access_token };
   }
 }
 

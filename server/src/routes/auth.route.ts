@@ -1,7 +1,11 @@
 import { API_ROUTES } from "@/constants";
 import AuthController from "@/controller/auth.controller";
 import validateResource from "@/middlewares/validateResources.midleware";
-import { createUserSchema, verifyUserSchema } from "@/schemas/user.schema";
+import {
+  createUserSchema,
+  loginUserSchema,
+  verifyUserSchema,
+} from "@/schemas/user.schema";
 import { Route } from "@/types/routes.interface";
 import { Router } from "express";
 class AuthRoute implements Route {
@@ -29,6 +33,10 @@ class AuthRoute implements Route {
       `/${this.path}/${API_ROUTES.LOGIN}`,
       validateResource(loginUserSchema),
       this.authController.login
+    );
+    this.router.get(
+      `/${this.path}/${API_ROUTES.REFRESH_TOKEN}`,
+      this.authController.refreshAccessToken
     );
   }
 }
