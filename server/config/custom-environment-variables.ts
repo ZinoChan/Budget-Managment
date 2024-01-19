@@ -1,11 +1,8 @@
 export default {
   port: "PORT",
   nodeEnv: "NODE_ENV",
-  jwtSecret: "JWT_SECRET",
-  jwtAccessTokenPrivateKey: "JWT_ACCESS_TOKEN_PRIVATE_KEY",
-  jwtAccessTokenPublicKey: "JWT_ACCESS_TOKEN_PUBLIC_KEY",
-  jwtRefreshTokenPrivateKey: "JWT_REFRESH_TOKEN_PRIVATE_KEY",
-  jwtRefreshTokenPublicKey: "JWT_REFRESH_TOKEN_PUBLIC_KEY",
+  jwtAccessSecret: "JWT_ACCESS_SECRET",
+  jwtRefreshSecret: "JWT_REFRESH_SECRET",
   redisUrl: "REDIS_URL",
   smtp: {
     host: "NODE_MAILER_HOST",

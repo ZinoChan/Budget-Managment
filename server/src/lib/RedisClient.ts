@@ -1,7 +1,7 @@
-import { createClient } from "redis";
+import { RedisClientType, createClient } from "redis";
 import config from "config";
 
-const redisClient = createClient({
+const redisClient: RedisClientType = createClient({
   url: config.get<string>("redisUrl"),
 });
 

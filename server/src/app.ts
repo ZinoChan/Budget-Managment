@@ -8,6 +8,7 @@ import { API_ROUTES } from "./constants";
 import morgan from "morgan";
 import validateEnv from "./utils/validateEnv";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 class App {
   public app: express.Application;
@@ -32,8 +33,14 @@ class App {
 
   private initializeMiddlewares() {
     this.app.use(express.json());
-    this.app.use(morgan("dev"));
+    if (this.env === "development") this.app.use(morgan("dev"));
     this.app.use(cookieParser());
+    this.app.use(
+      cors({
+        origin: [config.get<string>("origin")],
+        credentials: true,
+      })
+    );
   }
 
   private initializeRoutes(routes: Route[]) {

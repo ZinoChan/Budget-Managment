@@ -109,6 +109,23 @@ class AuthController {
       next(error);
     }
   };
+  public logOut = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.authService.logOutUser(res.locals.user.id);
+
+      res.cookie("access_token", "", { maxAge: -1 });
+      res.cookie("refresh_token", "", { maxAge: -1 });
+      res.cookie("logged_in", "", { maxAge: -1 });
+
+      res.status(HttpStatusCodes.OK).json({
+        status: "success",
+        message: "You have been successfully logged out",
+      });
+    } catch (error) {
+      console.log("Logout Err: ", error);
+      next(error);
+    }
+  };
 }
 
 export default AuthController;
