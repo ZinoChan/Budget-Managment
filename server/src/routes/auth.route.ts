@@ -10,6 +10,7 @@ import {
 } from "@/schemas/user.schema";
 import { Route } from "@/types/routes.interface";
 import { Router } from "express";
+
 class AuthRoute implements Route {
   public path = API_ROUTES.AUTH;
   public router = Router();
@@ -28,6 +29,7 @@ class AuthRoute implements Route {
       this.authMiddleware.validateResource(createUserSchema),
       this.authController.signUp
     );
+
     this.router.post(
       `/${this.path}/${API_ROUTES.VERIFY_EMAIL}/:verificationCode`,
       this.authMiddleware.validateResource(verifyUserSchema),

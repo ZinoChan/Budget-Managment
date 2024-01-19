@@ -10,8 +10,8 @@ function errorMiddleware(
 ) {
   try {
     const status = error.status || HttpStatusCodes.INTERNAL_SERVER_ERROR;
-    const message = error.message || "internal server error occurred";
-    res.status(status).json({ message });
+    const message = error.message || "Internal server error occurred";
+    res.status(status).json({ status: "fail", message });
   } catch (error) {
     next(error);
   }
