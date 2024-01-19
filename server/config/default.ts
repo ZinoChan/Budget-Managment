@@ -3,4 +3,5 @@ export default {
   accessTokenExpiresIn: 15,
   redisCacheExpiresIn: 60,
   origin: "http://localhost:3000",
+  apiUrl: "http://localhost:4002/api/v1",
 };
