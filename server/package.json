@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --exec ts-node --require tsconfig-paths/register src/server.ts",
-    "migrate:postgres": "npx prisma migrate dev --name dev",
+    "db:migrate": "npx prisma migrate dev --name user-entity",
     "build": "tsc",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",

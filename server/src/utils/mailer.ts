@@ -65,6 +65,16 @@ class Mailer {
       to
     );
   }
+
+  async sendPasswordResetToken(url: string, firstName: string, to: string) {
+    await this.sendEmail(
+      "resetPassword",
+      "Your password reset token (valid for only 10 minutes)",
+      url,
+      firstName,
+      to
+    );
+  }
 }
 
 export default Mailer;

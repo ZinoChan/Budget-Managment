@@ -8,23 +8,25 @@ datasource db {
 }
 
 model User {
-  id               String           @id @default(uuid())
-  email            String           @unique
-  username         String
-  password         String?
-  googleId         String?          @unique
-  githubId         String?          @unique
-  accessToken      String?
-  refreshToken     String?
-  verified         Boolean?         @default(false)
-  verificationCode String?          @unique @db.Text
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  budgetEnvelopes  BudgetEnvelope[]
-  role             RoleEnumType?    @default(USER)
+  id                 String           @id @default(uuid())
+  email              String           @unique
+  username           String
+  password           String?
+  provider           String?
+  passwordResetToken String?
+  passwordResetAt    DateTime?
+  googleId           String?          @unique
+  githubId           String?          @unique
+  accessToken        String?
+  refreshToken       String?
+  verified           Boolean?         @default(false)
+  verificationCode   String?          @unique @db.Text
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  budgetEnvelopes    BudgetEnvelope[]
+  role               RoleEnumType?    @default(USER)
 
-  @@unique([email, verificationCode])
-  @@index([email, verificationCode])
+  @@index(email)
 }
 
 model BudgetEnvelope {

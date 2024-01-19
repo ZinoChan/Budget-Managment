@@ -1,7 +1,9 @@
 import { HttpStatusCodes } from "@/constants";
 import {
   CreateUserInput,
+  ForgotPasswordInput,
   LoginUserInput,
+  ResetPasswordInput,
   VerifyUserInput,
 } from "@/schemas/user.schema";
 import AuthService from "@/services/auth.service";
@@ -109,6 +111,7 @@ class AuthController {
       next(error);
     }
   };
+
   public logOut = async (req: Request, res: Response, next: NextFunction) => {
     try {
       await this.authService.logOutUser(res.locals.user.id);
@@ -123,6 +126,51 @@ class AuthController {
       });
     } catch (error) {
       console.log("Logout Err: ", error);
+      next(error);
+    }
+  };
+
+  public forgotPassword = async (
+    req: Request<
+      Record<string, never>,
+      Record<string, never>,
+      ForgotPasswordInput
+    >,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const email = await this.authService.forgotPassword(req.body.email);
+      res.status(200).json({
+        status: "success",
+        message: `password reset was set to ${email}`,
+      });
+    } catch (error) {
+      console.log("forgot password Err:", error);
+      next(error);
+    }
+  };
+  public resetPassword = async (
+    req: Request<
+      ResetPasswordInput["params"],
+      Record<string, never>,
+      ResetPasswordInput["body"]
+    >,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      await this.authService.resetPassword(
+        req.params.resetToken,
+        req.body.password,
+        req.body.passwordConfirm
+      );
+      res.status(HttpStatusCodes.OK).json({
+        status: "success",
+        message: "Password data updated successfully",
+      });
+    } catch (error) {
+      console.log("Password Reset Err: ", error);
       next(error);
     }
   };

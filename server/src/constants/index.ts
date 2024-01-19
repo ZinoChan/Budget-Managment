@@ -16,6 +16,9 @@ export const API_ROUTES = {
   AUTH: "auth",
   LOGIN: "login",
   SIGN_UP: "signup",
+  LOGOUT: "logout",
   VERIFY_EMAIL: "verifyemail",
   REFRESH_TOKEN: "refresh",
+  FORGOT_PASSWORD: "forgotpassword",
+  RESET_PASSWORD: "resetpassword",
 };
