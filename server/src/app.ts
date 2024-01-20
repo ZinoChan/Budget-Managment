@@ -8,7 +8,11 @@ import { API_ROUTES } from "./constants";
 import morgan from "morgan";
 import validateEnv from "./utils/validateEnv";
 import cookieParser from "cookie-parser";
+
 import cors from "cors";
+
+import swaggerUi from "swagger-ui-express";
+import swaggerDocs from "../docs";
 
 class App {
   public app: express.Application;
@@ -24,6 +28,7 @@ class App {
 
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
+    this.initializeSwagger();
     this.initializeErrorHandling();
   }
 
@@ -45,6 +50,14 @@ class App {
 
   private initializeRoutes(routes: Route[]) {
     routes.forEach((route) => this.app.use(API_ROUTES.BASE_URL, route.router));
+  }
+
+  private initializeSwagger() {
+    this.app.use(
+      `${API_ROUTES.BASE_URL}/docs`,
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocs)
+    );
   }
 
   private initializeErrorHandling() {

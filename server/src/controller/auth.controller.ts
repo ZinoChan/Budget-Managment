@@ -28,7 +28,8 @@ class AuthController {
 
     try {
       const userEmail = await this.authService.createUser(body);
-      return res.status(HttpStatusCodes.CREATED).send({
+      return res.status(HttpStatusCodes.CREATED).json({
+        status: "success",
         message: `An email verification has been sent to ${userEmail}`,
       });
     } catch (error: any) {

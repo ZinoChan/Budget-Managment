@@ -128,30 +128,24 @@ class AuthService {
   public async refreshAccessToken(refresh_token: string) {
     const errMsg = "could not refresh access token";
     if (!refresh_token)
-      throw new HttpException(HttpStatusCodes.FORBIDDEN, "no refresh" + errMsg);
+      throw new HttpException(HttpStatusCodes.FORBIDDEN, errMsg);
 
     const decoded = verifyJwt<{ sub: string }>(
       refresh_token,
       "jwtRefreshSecret"
     );
-    if (!decoded)
-      throw new HttpException(
-        HttpStatusCodes.FORBIDDEN,
-        "not decoded" + errMsg
-      );
+    if (!decoded) throw new HttpException(HttpStatusCodes.FORBIDDEN, errMsg);
 
     const session = await this.userRepository.getUserSessionFromRedis(
       decoded.sub
     );
-    if (!session)
-      throw new HttpException(HttpStatusCodes.FORBIDDEN, "no session" + errMsg);
+    if (!session) throw new HttpException(HttpStatusCodes.FORBIDDEN, errMsg);
 
     const user = await this.userRepository.findUniqueUser({
       id: JSON.parse(session).id,
     });
 
-    if (!user)
-      throw new HttpException(HttpStatusCodes.FORBIDDEN, "no user" + errMsg);
+    if (!user) throw new HttpException(HttpStatusCodes.FORBIDDEN, errMsg);
 
     const access_token = signJwt({ sub: user.id }, "jwtAccessSecret", {
       expiresIn: `${config.get<number>("accessTokenExpiresIn")}m`,
