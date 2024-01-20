@@ -13,8 +13,15 @@ class IndexRoute implements Route {
 
   private initilizeRoutes() {
     this.router.get(this.path, async (_, res, next) => {
-      const message = await redisClient.get("try");
-      res.status(HttpStatusCodes.OK).json({ message });
+      try {
+        const message = await redisClient.get("try");
+        res.status(HttpStatusCodes.OK).json({ message });
+      } catch (error) {
+        console.error("Error retrieving message from Redis:", error);
+        res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
+          error: "Unable to retrieve message from Redis",
+        });
+      }
     });
   }
 }

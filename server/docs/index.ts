@@ -66,6 +66,34 @@ export default {
     },
   },
   paths: {
+    "/": {
+      get: {
+        summary: "Check the health of the application",
+        tags: ["Health"],
+        responses: {
+          200: {
+            description: "Application is healthy",
+            content: {
+              "application/json": {
+                example: {
+                  status: "OK",
+                },
+              },
+            },
+          },
+          500: {
+            description: "Application is unhealthy",
+            content: {
+              "application/json": {
+                example: {
+                  status: "ERROR",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     "/auth/signup": {
       post: {
         summary: "Register a new user",
@@ -316,6 +344,126 @@ export default {
               "application/json": {
                 example: {
                   status: "fail",
+                  message: "Internal server error occurred",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/logout": {
+      get: {
+        summary: "Log out a user",
+        description: "Log out a user by removing their session from Redis.",
+        tags: ["Auth"],
+        security: [
+          {
+            cookieAuth: [],
+          },
+        ],
+        responses: {
+          200: {
+            description: "User successfully logged out",
+            content: {
+              "application/json": {
+                example: {
+                  status: "success",
+                  message: "User successfully logged out",
+                },
+              },
+            },
+          },
+          401: {
+            description: "Unauthorized. User not authenticated",
+            content: {
+              "application/json": {
+                example: {
+                  status: "fail",
+                  message: "Unauthorized. User not authenticated",
+                },
+              },
+            },
+          },
+          500: {
+            description: "Internal server error occurred",
+            content: {
+              "application/json": {
+                example: {
+                  status: "error",
+                  message: "Internal server error occurred",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/forgot-password": {
+      post: {
+        summary: "Initiate password reset",
+        description: "Initiate the process of resetting a user's password.",
+        tags: ["Auth"],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  email: {
+                    type: "string",
+                  },
+                },
+                required: ["email"],
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description:
+              "Password reset initiated. Check your email for instructions.",
+            content: {
+              "application/json": {
+                example: {
+                  status: "success",
+                  message:
+                    "Password reset initiated. Check your email for instructions.",
+                },
+              },
+            },
+          },
+          404: {
+            description: "User not found",
+            content: {
+              "application/json": {
+                example: {
+                  status: "fail",
+                  message: "No user with that email",
+                },
+              },
+            },
+          },
+          403: {
+            description:
+              "Account not verified or registered through a provider",
+            content: {
+              "application/json": {
+                example: {
+                  status: "fail",
+                  message:
+                    "Account not verified or registered through a provider. Cannot initiate password reset.",
+                },
+              },
+            },
+          },
+          500: {
+            description: "Internal server error occurred",
+            content: {
+              "application/json": {
+                example: {
+                  status: "error",
                   message: "Internal server error occurred",
                 },
               },
