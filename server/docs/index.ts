@@ -399,7 +399,7 @@ export default {
         },
       },
     },
-    "/auth/forgot-password": {
+    "/auth/forgotpassword": {
       post: {
         summary: "Initiate password reset",
         description: "Initiate the process of resetting a user's password.",
@@ -454,6 +454,89 @@ export default {
                   status: "fail",
                   message:
                     "Account not verified or registered through a provider. Cannot initiate password reset.",
+                },
+              },
+            },
+          },
+          500: {
+            description: "Internal server error occurred",
+            content: {
+              "application/json": {
+                example: {
+                  status: "error",
+                  message: "Internal server error occurred",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/auth/resetpassword/{resetToken}": {
+      patch: {
+        summary: "Complete password reset",
+        description: "Complete the process of resetting a user's password using the provided reset token.",
+        tags: ["Auth"],
+        parameters: [
+          {
+            in: "path",
+            name: "resetToken",
+            description: "The token received in the user's email to reset the password",
+            required: true,
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  password: {
+                    type: "string",
+                  },
+                  passwordConfirmation: {
+                    type: "string",
+                  },
+                },
+                required: ["password", "passwordConfirmation"],
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Password successfully reset",
+            content: {
+              "application/json": {
+                example: {
+                  status: "success",
+                  message: "Password successfully reset",
+                },
+              },
+            },
+          },
+          403: {
+            description: "Invalid token or token has expired",
+            content: {
+              "application/json": {
+                example: {
+                  status: "fail",
+                  message: "Invalid token or token has expired",
+                },
+              },
+            },
+          },
+          422: {
+            description: "Unprocessable Entity. Password and password confirmation do not match.",
+            content: {
+              "application/json": {
+                example: {
+                  status: "fail",
+                  message: "Password and password confirmation do not match",
                 },
               },
             },

@@ -15,7 +15,7 @@ class IndexRoute implements Route {
     this.router.get(this.path, async (_, res, next) => {
       try {
         const message = await redisClient.get("try");
-        res.status(HttpStatusCodes.OK).json({ message });
+        res.status(HttpStatusCodes.OK).json({ status: "success", message });
       } catch (error) {
         console.error("Error retrieving message from Redis:", error);
         res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
