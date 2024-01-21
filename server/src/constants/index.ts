@@ -21,4 +21,6 @@ export const API_ROUTES = {
   REFRESH_TOKEN: "refresh",
   FORGOT_PASSWORD: "forgotpassword",
   RESET_PASSWORD: "resetpassword",
+  // Envelopes
+  ENVELOPES: "envelopes",
 };
