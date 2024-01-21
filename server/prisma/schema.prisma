@@ -8,37 +8,42 @@ datasource db {
 }
 
 model User {
-  id                 String           @id @default(uuid())
-  email              String           @unique
+  id                 String        @id @default(uuid())
+  email              String        @unique
   username           String
   password           String?
   provider           String?
   passwordResetToken String?
   passwordResetAt    DateTime?
-  googleId           String?          @unique
-  githubId           String?          @unique
+  googleId           String?       @unique
+  githubId           String?       @unique
   accessToken        String?
   refreshToken       String?
-  verified           Boolean?         @default(false)
-  verificationCode   String?          @unique @db.Text
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  budgetEnvelopes    BudgetEnvelope[]
-  role               RoleEnumType?    @default(USER)
+  verified           Boolean?      @default(false)
+  verificationCode   String?       @unique @db.Text
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  budgetEnvelopes    Envelope[]
+  role               RoleEnumType? @default(USER)
 
   @@index(email)
 }
 
-model BudgetEnvelope {
+model Envelope {
   id             String        @id @default(uuid())
-  title          String
+  title          String        @unique
   initialAmount  Int           @default(0)
   currentBalance Int           @default(0)
-  user           User          @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
   transactions   Transaction[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt()
+  color          String?
+  image          String?
+
+  @@unique([userId, title])
+  @@index(title)
 }
 
 model Transaction {
@@ -50,10 +55,12 @@ model Transaction {
   updatedAt       DateTime        @updatedAt()
   amount          Int
   transactionType TransactionType
-  envelope        BudgetEnvelope  @relation(fields: [envelopeId], references: [id])
+  envelope        Envelope        @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
   envelopeId      String
-  category        Category        @relation(fields: [categoryTitle], references: [title])
+  category        Category        @relation(fields: [categoryTitle], references: [title], onDelete: NoAction)
   categoryTitle   String
+  color           String?
+  image           String?
 }
 
 model Category {
