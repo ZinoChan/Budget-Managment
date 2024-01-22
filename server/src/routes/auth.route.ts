@@ -1,5 +1,6 @@
 import { API_ROUTES } from "@/constants";
 import AuthController from "@/controller/auth.controller";
+import AppMiddleware from "@/middlewares/app.middleware";
 import AuthMiddleware from "@/middlewares/auth.middleware";
 import {
   createUserSchema,
@@ -16,28 +17,34 @@ class AuthRoute implements Route {
   public router = Router();
   private authController: AuthController;
   private authMiddleware: AuthMiddleware;
+  private appMiddleware: AppMiddleware;
 
-  constructor(authController: AuthController, authMiddleware: AuthMiddleware) {
+  constructor(
+    authController: AuthController,
+    authMiddleware: AuthMiddleware,
+    appMiddleware: AppMiddleware
+  ) {
     this.authController = authController;
     this.authMiddleware = authMiddleware;
+    this.appMiddleware = appMiddleware;
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
     this.router.post(
       `/${this.path}/${API_ROUTES.SIGN_UP}`,
-      this.authMiddleware.validateResource(createUserSchema),
+      this.appMiddleware.validateResource(createUserSchema),
       this.authController.signUp
     );
 
     this.router.post(
       `/${this.path}/${API_ROUTES.VERIFY_EMAIL}/:verificationCode`,
-      this.authMiddleware.validateResource(verifyUserSchema),
+      this.appMiddleware.validateResource(verifyUserSchema),
       this.authController.verifyEmail
     );
     this.router.post(
       `/${this.path}/${API_ROUTES.LOGIN}`,
-      this.authMiddleware.validateResource(loginUserSchema),
+      this.appMiddleware.validateResource(loginUserSchema),
       this.authController.login
     );
     this.router.get(
@@ -52,12 +59,12 @@ class AuthRoute implements Route {
     );
     this.router.post(
       `/${this.path}/${API_ROUTES.FORGOT_PASSWORD}`,
-      this.authMiddleware.validateResource(forgotPasswordSchema),
+      this.appMiddleware.validateResource(forgotPasswordSchema),
       this.authController.forgotPassword
     );
     this.router.patch(
       `/${this.path}/${API_ROUTES.RESET_PASSWORD}/:resetToken`,
-      this.authMiddleware.validateResource(resetPasswordSchema),
+      this.appMiddleware.validateResource(resetPasswordSchema),
       this.authController.resetPassword
     );
   }
