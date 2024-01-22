@@ -1,3 +1,4 @@
+import { CreateEnvelopeInput } from "@/schemas/envelope.schema";
 import { Envelope, Prisma, PrismaClient } from "@prisma/client";
 
 class EnvelopeRepository {
@@ -8,10 +9,16 @@ class EnvelopeRepository {
   }
 
   createEnvelope = async (
-    envelopeData: Prisma.EnvelopeCreateInput
+    envelopeData: CreateEnvelopeInput,
+    userId: string
   ): Promise<Envelope> => {
     const envelope = await this.prisma.envelope.create({
-      data: envelopeData,
+      data: {
+        ...envelopeData,
+        user: {
+          connect: { id: userId },
+        },
+      },
     });
     return envelope;
   };

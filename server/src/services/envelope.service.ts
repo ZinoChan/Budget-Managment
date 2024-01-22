@@ -1,5 +1,7 @@
+import { HttpStatusCodes } from "@/constants";
+import { HttpException } from "@/exceptions/httpException";
 import EnvelopeRepository from "@/repositories/envelopeRepository";
-import { EnvelopeUpdateInputWithRequiredFields } from "@/types/envelope.interface";
+import { CreateEnvelopeInput } from "@/schemas/envelope.schema";
 import { Envelope, Prisma } from "@prisma/client";
 
 class EnvelopeService {
@@ -9,17 +11,20 @@ class EnvelopeService {
   }
 
   public async createEnvelope(
-    envelopeData: Prisma.EnvelopeCreateInput
+    envelopeData: CreateEnvelopeInput,
+    userId: string
   ): Promise<Envelope> {
-    const envelope = await this.envelopeRepository.createEnvelope(envelopeData);
+    const envelope = await this.envelopeRepository.createEnvelope(
+      { ...envelopeData, title: envelopeData.title.toLowerCase() },
+      userId
+    );
     return envelope;
   }
 
   public async getUserEnvelopes(userId: string): Promise<Envelope[]> {
-    const envelopes = await this.envelopeRepository.getUserEnvelopes(
-      { userId },
-      { transactions: true }
-    );
+    const envelopes = await this.envelopeRepository.getUserEnvelopes({
+      userId,
+    });
     return envelopes;
   }
 
@@ -30,20 +35,24 @@ class EnvelopeService {
     const envelope = await this.envelopeRepository.findUniqueEnvelope({
       userId_title: {
         userId,
-        title: envelopeTitle,
+        title: envelopeTitle.toLowerCase(),
       },
     });
+    if (!envelope)
+      throw new HttpException(HttpStatusCodes.NOT_FOUND, "Envelope not found");
     return envelope;
   }
 
   public async updateEnvelope(
-    envelopeData: EnvelopeUpdateInputWithRequiredFields
+    userId: string,
+    title: string,
+    envelopeData: Prisma.EnvelopeUpdateInput
   ): Promise<Envelope> {
     const envelope = await this.envelopeRepository.updateEnvelope(
       {
         userId_title: {
-          userId: envelopeData.userId,
-          title: envelopeData.title,
+          userId: userId,
+          title,
         },
       },
       { ...envelopeData }
@@ -52,8 +61,8 @@ class EnvelopeService {
   }
 
   public async deleteEnvelope(
-    envelopeTitle: string,
-    userId: string
+    userId: string,
+    envelopeTitle: string
   ): Promise<string> {
     const envelope = await this.envelopeRepository.deleteEnvelope({
       userId_title: {
