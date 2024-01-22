@@ -13,6 +13,7 @@ import cors from "cors";
 
 import swaggerUi from "swagger-ui-express";
 import swaggerDocs from "../docs";
+import prismaErrorMiddleware from "./middlewares/prismaError.middleware";
 
 class App {
   public app: express.Application;
@@ -61,6 +62,7 @@ class App {
   }
 
   private initializeErrorHandling() {
+    this.app.use(prismaErrorMiddleware);
     this.app.use(errorMiddleware);
   }
 
