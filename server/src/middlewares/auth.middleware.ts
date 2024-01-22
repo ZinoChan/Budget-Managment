@@ -4,33 +4,12 @@ import { omit } from "@/helpers";
 import UserRepository, { excludedFields } from "@/repositories/userRepository";
 import { verifyJwt } from "@/utils/jwt";
 import { Request, Response, NextFunction } from "express";
-import { AnyZodObject, ZodError } from "zod";
 
 class AuthMiddleware {
   private userRepository: UserRepository;
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
   }
-
-  public validateResource =
-    (schema: AnyZodObject) =>
-    (req: Request, res: Response, next: NextFunction) => {
-      try {
-        schema.parse({
-          body: req.body,
-          query: req.query,
-          params: req.params,
-        });
-        next();
-      } catch (err: any) {
-        if (err instanceof ZodError)
-          return res.status(HttpStatusCodes.BAD_REQUEST).json({
-            status: "fail",
-            errors: err.errors,
-          });
-        next(err);
-      }
-    };
 
   public deserializeUser = async (
     req: Request,
