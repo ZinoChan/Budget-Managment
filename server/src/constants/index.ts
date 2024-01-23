@@ -23,4 +23,6 @@ export const API_ROUTES = {
   RESET_PASSWORD: "resetpassword",
   // Envelopes
   ENVELOPES: "envelopes",
+  // Transactions
+  TRANSACTIONS: "transactions",
 };

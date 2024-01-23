@@ -16,18 +16,14 @@ const prismaErrorMiddleware = (
         message: `The ${modelName} was not found.`,
       });
     }
-  } else if (error instanceof Prisma.PrismaClientInitializationError)
+  } else if (error instanceof Prisma.PrismaClientInitializationError) {
     res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
       status: "fail",
       message:
         "Failed to process the request due to a database issue. Please try again later.",
     });
+  }
 
-  res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
-    status: "fail",
-    message:
-      "Failed to process the request due to a database issue. Please try again later.",
-  });
   next(error);
 };
 
