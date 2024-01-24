@@ -39,7 +39,10 @@ const server = new App([
   ),
   new TransactionRoute(
     new TransactionController(
-      new TransactionService(new TransactionRepository(prismaClient))
+      new TransactionService(
+        new TransactionRepository(prismaClient),
+        new EnvelopeService(new EnvelopeRepository(prismaClient))
+      )
     ),
     new AuthMiddleware(new UserRepository(prismaClient, redisClient)),
     new AppMiddleware()
