@@ -1,6 +1,7 @@
 import { GraduationCap } from "lucide-react";
 import Filters from "../../components/Filters";
 import TransactionCard from "../../components/TransactionCard";
+import { AddTransactionBtn } from "../../components/AddTransactionBtn";
 
 export default function EnvelopeTransacitons() {
   return (
@@ -20,9 +21,7 @@ export default function EnvelopeTransacitons() {
             <p className="text-sm text-slate-500">$249.000</p>
           </div>
         </div>
-        <button className="px-4 py-2 rounded text-white bg-blue-500">
-          Add transaction
-        </button>
+        <AddTransactionBtn />
       </div>
       <Filters />
       <div>
