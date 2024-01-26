@@ -1,6 +1,7 @@
 import App from "./app";
 import AuthController from "./controller/auth.controller";
 import EnvelopeController from "./controller/envelope.controller";
+import StatsController from "./controller/stats.controller";
 import TransactionController from "./controller/transaction.controller";
 import prismaClient from "./lib/PrismaClient";
 import redisClient from "./lib/RedisClient";
@@ -12,9 +13,11 @@ import UserRepository from "./repositories/userRepository";
 import AuthRoute from "./routes/auth.route";
 import EnvelopeRoute from "./routes/envelope.route";
 import IndexRoute from "./routes/index.route";
+import StatsRoute from "./routes/stats.route";
 import TransactionRoute from "./routes/transaction.route";
 import AuthService from "./services/auth.service";
 import EnvelopeService from "./services/envelope.service";
+import StatsService from "./services/stats.service";
 import TransactionService from "./services/transaction.service";
 import Mailer from "./utils/mailer";
 
@@ -46,6 +49,15 @@ const server = new App([
     ),
     new AuthMiddleware(new UserRepository(prismaClient, redisClient)),
     new AppMiddleware()
+  ),
+  new StatsRoute(
+    new StatsController(
+      new StatsService(
+        new EnvelopeRepository(prismaClient),
+        new TransactionRepository(prismaClient)
+      )
+    ),
+    new AuthMiddleware(new UserRepository(prismaClient, redisClient))
   ),
 ]);
 
