@@ -81,6 +81,22 @@ class TransactionRepository {
       select,
     })) as Transaction;
   };
+
+  getTransactionCount = async (where: Prisma.TransactionWhereInput) => {
+    return this.prisma.transaction.count({ where });
+  };
+
+  getGroupedTransaction = async (
+    by: Prisma.TransactionScalarFieldEnum[],
+    where: Prisma.TransactionWhereInput,
+    sum: Prisma.TransactionSumAggregateInputType
+  ) => {
+    return await this.prisma.transaction.groupBy({
+      by,
+      where,
+      _sum: sum,
+    });
+  };
 }
 
 export default TransactionRepository;
