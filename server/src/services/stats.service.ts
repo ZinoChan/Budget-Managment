@@ -92,6 +92,9 @@ class StatsService {
             gte: startDate,
             lt: endDate,
           },
+          transactionType: {
+            in: ["PURCHASE", "WITHDRAW"],
+          },
         });
 
       monthlyCounts.push({
@@ -109,7 +112,13 @@ class StatsService {
     const spendingByCategory =
       await this.transactionRepository.getGroupedTransaction(
         ["categoryTitle"],
-        { userId, transactionType: "PURCHASE" || "WITHDRAWAL" },
+        {
+          userId,
+          transactionType: {
+            in: ["PURCHASE", "WITHDRAW"],
+          },
+        },
+
         { amount: true }
       );
     return spendingByCategory;
