@@ -1,6 +1,5 @@
 import EnvelopeRepository from "@/repositories/envelopeRepository";
 import TransactionRepository from "@/repositories/transactionRepository";
-import UserRepository from "@/repositories/userRepository";
 
 class StatsService {
   private envelopeRepository: EnvelopeRepository;
@@ -57,11 +56,11 @@ class StatsService {
         userId,
         transactionType: "WITHDRAW",
       });
-    const totalWuthdrawal = userTransactions.reduce(
+    const totalWithdrawal = userTransactions.reduce(
       (acc, transaction) => acc + transaction.amount,
       0
     );
-    return { totalWuthdrawal, numberOfWuthdrawal: userTransactions.length };
+    return { totalWithdrawal, numberOfWithdrawal: userTransactions.length };
   }
 
   async totalPurchase(userId: string) {
@@ -105,7 +104,7 @@ class StatsService {
         ),
       });
     }
-    return { [year]: monthlyCounts };
+    return { [year]: { data: monthlyCounts } };
   }
 
   totalSpendingsByCategory = async (userId: string) => {
