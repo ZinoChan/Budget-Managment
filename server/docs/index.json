@@ -541,6 +541,52 @@
           }
         }
       }
-    }
-  }
+    },
+	"/envelopes": {
+		"get": {
+			"summary": "Get all envelopes",
+			"description": "Get all envelopes",
+			"tags": ["Envelopes"],
+			"security": [
+				{
+					"cookieAuth": []
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "Envelopes successfully retrieved",
+					"content": {
+						"application/json": {
+							"example": {
+								"status": "success"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "Unauthorized. User not authenticated",
+					"content": {
+						"application/json": {
+							"example": {
+								"status": "fail",
+								"message": "Unauthorized. User not authenticated"
+							}
+						}
+					}
+				},
+				"500": {
+					"description": "Internal server error occurred",
+					"content": {
+						"application/json": {
+							"example": {
+								"status": "error",
+								"message": "Internal server error occurred"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
 }
