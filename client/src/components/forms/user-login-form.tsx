@@ -16,6 +16,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 // import GoogleSignInButton from "../github-auth-button";
 import { useToast } from "../ui/use-toast";
+import Cookies from "js-cookie";
+import {setAccessToken} from "@/actions/cookies";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
@@ -71,10 +73,7 @@ export default function UserLoginForm() {
           title: "Success",
           description: responseData?.message,
         });
-        const accessToken =
-          response?.headers?.get("Set-Cookie")?.split(";")[0] ?? "";
-        document.cookie = accessToken;
-
+        setAccessToken(responseData.access_token);
         router.push("/dashboard");
       }
       console.log(responseData);

@@ -1,4 +1,5 @@
 "use client";
+import { getAccessToken } from "@/actions/cookies";
 import { AlertModal } from "@/components/modal/alert-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "@/components/ui/use-toast";
 import { Envelope } from "@/constants/data";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -22,7 +24,37 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => {
+    const access_token = await getAccessToken();
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:4002/api/v1/envelopes/${data.title}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token?.value}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const envelope = await response.json();
+      if (envelope.status === "success") {
+        toast({
+          title: "Success",
+          description: "Envelope deleted successfully",
+        });
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("An error occurred while fetching the envelope:", error);
+    }
+    setLoading(false);
+    setOpen(false);
+  };
 
   return (
     <>
