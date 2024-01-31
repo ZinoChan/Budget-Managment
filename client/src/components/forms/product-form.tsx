@@ -28,6 +28,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 // import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
+import { getAccessToken } from "@/actions/cookies";
 // import FileUpload from "../file-upload";
 const ImgSchema = z.object({
   fileName: z.string(),
@@ -41,30 +42,30 @@ const ImgSchema = z.object({
 });
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
-  name: z
+  title: z
     .string()
-    .min(3, { message: "Product Name must be at least 3 characters" }),
-  imgUrl: z
-    .array(ImgSchema)
-    .max(IMG_MAX_LIMIT, { message: "You can only add up to 3 images" })
-    .min(1, { message: "At least one image must be added." }),
-  description: z
-    .string()
-    .min(3, { message: "Product description must be at least 3 characters" }),
-  price: z.coerce.number(),
-  category: z.string().min(1, { message: "Please select a category" }),
+    .min(3, { message: "Envelope Title must be at least 3 characters" }),
+  // imgUrl: z
+  //   .array(ImgSchema)
+  //   .max(IMG_MAX_LIMIT, { message: "You can only add up to 3 images" })
+  //   .min(1, { message: "At least one image must be added." }),
+  // description: z
+  //   .string()
+  //   .min(3, { message: "Product description must be at least 3 characters" }),
+  currentBalance: z.coerce.number(),
+  // category: z.string().min(1, { message: "Please select a category" }),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
   initialData: any | null;
-  categories: any;
+  // categories: any;
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
   initialData,
-  categories,
+  // categories,
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -72,7 +73,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
-  const title = initialData ? "Edit product" : "Create product";
+  const title = initialData ? "Edit Envelope" : "Create Envelope";
   const description = initialData ? "Edit a product." : "Add a new product";
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
@@ -80,11 +81,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const defaultValues = initialData
     ? initialData
     : {
-        name: "",
-        description: "",
-        price: 0,
-        imgUrl: [],
-        category: "",
+        title: "",
+        // description: "",
+        currentBalance: 0,
+        // imgUrl: [],
+        // category: "",
       };
 
   const form = useForm<ProductFormValues>({
@@ -95,20 +96,76 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
+      const access_token = await getAccessToken();
       if (initialData) {
-        // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+        const response = await fetch(
+          `http://localhost:4002/api/v1/envelopes/${initialData.title}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token?.value}`,
+            },
+            body: JSON.stringify(data),
+          }
+        );
+        if (!response.ok) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem with your request.",
+          });
+        }
+        const responseData = await response.json();
+        if (responseData.status === "fail") {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: responseData?.message,
+          });
+        } else {
+          toast({
+            title: "success",
+            description: "Envelope updated successfully",
+          });
+          router.refresh();
+          router.push(`/dashboard/envelopes`);
+        }
       } else {
-        // const res = await axios.post(`/api/products/create-product`, data);
-        // console.log("product", res);
+        const response = await fetch("http://localhost:4002/api/v1/envelopes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token?.value}`,
+          },
+          body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem with your request.",
+          });
+        }
+        const responseData = await response.json();
+        if (responseData.status === "fail") {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: responseData?.message,
+          });
+        } else {
+          toast({
+            title: "success",
+            description: "Envelope add successfully",
+          });
+
+          router.refresh();
+          router.push(`/dashboard/envelopes`);
+        }
       }
-      router.refresh();
-      router.push(`/dashboard/products`);
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-      });
     } catch (error: any) {
+      console.log(error);
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -132,7 +189,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
 
-  const triggerImgUrlValidation = () => form.trigger("imgUrl");
+  // const triggerImgUrlValidation = () => form.trigger("imgUrl");
 
   return (
     <>
@@ -161,34 +218,34 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <FormField
+          {/* <FormField
             control={form.control}
             name="imgUrl"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Images</FormLabel>
                 <FormControl>
-                  {/* <FileUpload
+                  <FileUpload
                     onChange={field.onChange}
                     value={field.value}
                     onRemove={field.onChange}
-                  /> */}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Envelope Title</FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Product name"
+                      placeholder="enter envelope title"
                       {...field}
                     />
                   </FormControl>
@@ -196,7 +253,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
@@ -212,13 +269,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
-              name="price"
+              name="currentBalance"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Envelope Balance</FormLabel>
                   <FormControl>
                     <Input type="number" disabled={loading} {...field} />
                   </FormControl>
@@ -226,7 +283,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="category"
               render={({ field }) => (
@@ -247,7 +304,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* @ts-ignore  */}
+                      @ts-ignore
                       {categories.map((category) => (
                         <SelectItem key={category._id} value={category._id}>
                           {category.name}
@@ -258,7 +315,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
           <Button disabled={loading} className="ml-auto" type="submit">
             {action}
