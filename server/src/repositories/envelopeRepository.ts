@@ -15,6 +15,7 @@ class EnvelopeRepository {
     const envelope = await this.prisma.envelope.create({
       data: {
         ...envelopeData,
+        initialAmount: envelopeData.currentBalance,
         user: {
           connect: { id: userId },
         },

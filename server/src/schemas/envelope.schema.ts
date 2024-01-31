@@ -8,11 +8,6 @@ export const createEnvelopeSchema = z.object({
       })
       .min(3, "Title must be more than 3 characters")
       .max(100, "Title can't be more than 100 characters"),
-    initialAmount: z
-      .number({
-        required_error: "Initial amount is required",
-      })
-      .min(0, "Initial amount can't be negative"),
     currentBalance: z
       .number({
         required_error: "current balance is required",

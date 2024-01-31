@@ -15,7 +15,10 @@ class EnvelopeService {
     userId: string
   ): Promise<Envelope> {
     const envelope = await this.envelopeRepository.createEnvelope(
-      { ...envelopeData, title: envelopeData.title.toLowerCase() },
+      {
+        ...envelopeData,
+        title: envelopeData.title.toLowerCase(),
+      },
       userId
     );
     return envelope;
