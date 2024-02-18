@@ -182,18 +182,7 @@ export const navItems: NavItem[] = [
     icon: "dollarBadge",
     label: "transaction",
   },
-  {
-    title: "Profile",
-    href: "/dashboard/profile",
-    icon: "profile",
-    label: "profile",
-  },
-  {
-    title: "Kanban",
-    href: "/dashboard/kanban",
-    icon: "kanban",
-    label: "kanban",
-  },
+
   {
     title: "Login",
     href: "/",
